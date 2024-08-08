@@ -9,7 +9,7 @@ basin_GCRC(idx_Continent, num_GCRC)
 \arguments{
 \item{idx_Continent}{(string) Index of continents from ("eu", "af","as","au","na","sa")}
 
-\item{num_GCRC}{(int) GCRC number}
+\item{num_GCRC}{(int / vector of int) GCRC number/-s}
 }
 \description{
 Get the basin of one Cell with GCRC Number
