@@ -3,6 +3,7 @@
 #' @param idx_Continent (string) Index of continents from ("eu", "af","as","au","na","sa")
 #' @param num_GCRC (int / vector of int) GCRC number/-s
 #' @importFrom terra aggregate vect
+#' @return (terra::SpatVector) Basin(s) of every WaterGAP3 Cell
 #' @export
 basin_GCRC <- function(idx_Continent, num_GCRC) {
 

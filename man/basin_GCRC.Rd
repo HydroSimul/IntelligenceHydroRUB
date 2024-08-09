@@ -11,6 +11,9 @@ basin_GCRC(idx_Continent, num_GCRC)
 
 \item{num_GCRC}{(int / vector of int) GCRC number/-s}
 }
+\value{
+(terra::SpatVector) Basin(s) of every WaterGAP3 Cell
+}
 \description{
 Get the basin of one Cell with GCRC Number
 }
