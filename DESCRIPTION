@@ -7,10 +7,12 @@ Maintainer: Kan Lei <kan.lei@rub.de>
 Description: This package will collect all the functions used in the course in Ruhr-Universität Bochum.
 License: GPL (>= 2)
 Imports: mathjaxr, Rdpack, 
-  stringr, dplyr,
+  stringr, dplyr, purrr,
+  terra,
   RCurl, terra,
-  rlang, glue
-RoxygenNote: 7.3.1
+  rlang, glue,
+  Rcpp (>= 1.0.6)
+LinkingTo: Rcpp
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 RdMacros: mathjaxr, Rdpack
@@ -22,3 +24,4 @@ Depends:
     R (>= 3.6)
 LazyData: true
 URL: https://github.com/HydroSimul/IntelligenceHydroRUB, https://hydrosimul.github.io/IntelligenceHydroRUB/
+RoxygenNote: 7.3.2

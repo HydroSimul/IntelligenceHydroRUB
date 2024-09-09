@@ -69,3 +69,50 @@ analyse_file_unf <- function(fn_UNF) {
   if(if_Matrix2) n_Dim1 <- as.integer(str_MatrixN2)
   return(list(type_UNF = type_UNF, n_Byte = n_Byte, n_Dim1 = n_Dim1))
 }
+
+
+check_n_cell <- function(idx_Continent, n_Cell) {
+  # n_Cell_Conti <- c(180721, 371410, 841703, 109084, 461694, 226852, 70412)
+  # names(n_Cell_Conti) <- c("eu", "af", "as", "au", "na", "sa", "global_wg2")
+  if (n_Cell_Conti[idx_Continent] != n_Cell) {
+    stop(paste0("The continent ", idx_Continent, " must have ",
+                n_Cell_Conti[idx_Continent], " cells, but the data have ",
+                n_Cell, " cells."))
+  }
+
+}
+
+
+
+#' @rdname unf
+#' @param num_Data vector (1D), data, that read from UNF-file and order by the GCRC-Number
+#' @param idx_Continent string in ("eu", "af", "as", "au", "na", "sa", "global_wg2")
+#' @importFrom terra values
+#' @export
+unf_2_raster <- function(idx_Continent, num_Data) {
+
+  check_n_cell(idx_Continent, length(num_Data))
+
+  rast_Mask <- lst_rast_Mask_WaterGAP3[[idx_Continent]] |> rast()
+  vct_GCRC <- values(rast_Mask)
+  idx_NotNA <- which(!is.na(vct_GCRC))
+  idx_GCRC <- vct_GCRC[idx_NotNA]
+  values(rast_Mask)[idx_NotNA] <- num_Data[idx_GCRC]
+
+  rast_Mask
+}
+
+
+#' @rdname unf
+#' @param lst_num_Data list of vector, data, that read from UNF-file and order by the GCRC-Number,
+#' the list must named as ("eu", "af", "as", "au", "na", "sa") two or more
+#' @importFrom terra merge
+#' @importFrom purrr map2 reduce
+#' @export
+unf_2_raster_merge <- function(lst_num_Data) {
+  str_Continent <- names(lst_num_Data)
+  map2(str_Continent, lst_num_Data, unf_2_raster) |>
+    reduce(merge)
+}
+
+

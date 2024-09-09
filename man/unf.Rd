@@ -5,6 +5,8 @@
 \alias{read_UNF}
 \alias{read_UNF_scp}
 \alias{write_UNF}
+\alias{unf_2_raster}
+\alias{unf_2_raster_merge}
 \title{Data im- & export in UNF file}
 \usage{
 read_UNF(fn_UNF)
@@ -12,6 +14,10 @@ read_UNF(fn_UNF)
 read_UNF_scp(fn_UNF, ip_Host, str_Username, str_Password)
 
 write_UNF(data_Export, fn_UNF)
+
+unf_2_raster(idx_Continent, num_Data)
+
+unf_2_raster_merge(lst_num_Data)
 }
 \arguments{
 \item{fn_UNF}{string, name of the UNF file}
@@ -23,6 +29,13 @@ write_UNF(data_Export, fn_UNF)
 \item{str_Password}{string, a password for accessing the local SSH key}
 
 \item{data_Export}{vector, data, that would exported}
+
+\item{idx_Continent}{string in ("eu", "af", "as", "au", "na", "sa", "global_wg2")}
+
+\item{num_Data}{vector (1D), data, that read from UNF-file and order by the GCRC-Number}
+
+\item{lst_num_Data}{list of vector, data, that read from UNF-file and order by the GCRC-Number,
+the list must named as ("eu", "af", "as", "au", "na", "sa") two or more}
 }
 \value{
 vector of numric or integer by read, UNF file by write
