@@ -15,7 +15,7 @@
 #' @export
 aggregate_wg3 <- function(rast_Data, int_Fact = 10, fct_Aggre = mean, fill_NA = 0) {
   rast_Global <- rast(rast_Global_WG3)
-  rast_Data <- crop(rast_Data, ext(rast_Global)) |> extend(ext(rast_Global))
+  rast_Data <- extend(rast_Data, ext(rast_Global)) |> crop(rast_Global)
   rast_Aggre <- aggregate(rast_Data, int_Fact, fct_Aggre)
   rast_Aggre[is.na(rast_Aggre)] <- fill_NA
 
