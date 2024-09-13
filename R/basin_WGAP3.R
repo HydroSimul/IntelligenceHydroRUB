@@ -7,14 +7,7 @@
 #' @export
 basin_GCRC <- function(idx_Continent, num_GCRC) {
 
-  vect_Cell <- switch(idx_Continent,
-                      eu = vect_Mama_Cell_eu,
-                      af = vect_Mama_Cell_af,
-                      as = vect_Mama_Cell_as,
-                      au = vect_Mama_Cell_au,
-                      na = vect_Mama_Cell_na,
-                      sa = vect_Mama_Cell_sa,
-                      stop('Invalid continent, make sure in ("eu", "af","as","au","na","sa")'))
+  vect_Cell <- get_vect_mama(idx_Continent)
   int_Inflow_GCRC <- switch(idx_Continent,
                       eu = int_Inflow_GCRC_eu,
                       af = int_Inflow_GCRC_af,

@@ -7,6 +7,8 @@
 \alias{write_UNF}
 \alias{unf_2_raster}
 \alias{unf_2_raster_merge}
+\alias{raster_2_unf}
+\alias{extract_unf}
 \title{Data im- & export in UNF file}
 \usage{
 read_UNF(fn_UNF)
@@ -18,6 +20,10 @@ write_UNF(data_Export, fn_UNF)
 unf_2_raster(idx_Continent, num_Data)
 
 unf_2_raster_merge(lst_num_Data)
+
+raster_2_unf(rast_Data, idx_Continent)
+
+extract_unf(rast_Data, idx_Continent, fct_Extract = mean, fill_NA = 0)
 }
 \arguments{
 \item{fn_UNF}{string, name of the UNF file}
@@ -36,6 +42,10 @@ unf_2_raster_merge(lst_num_Data)
 
 \item{lst_num_Data}{list of vector, data, that read from UNF-file and order by the GCRC-Number,
 the list must named as ("eu", "af", "as", "au", "na", "sa") two or more}
+
+\item{rast_Data}{(terra::SpatRaster) global raster data and the resolution must be 5'}
+
+\item{fct_Extract}{A function to apply to the extracted values. Default is \code{mean}.}
 }
 \value{
 vector of numric or integer by read, UNF file by write

@@ -115,4 +115,35 @@ unf_2_raster_merge <- function(lst_num_Data) {
     reduce(merge)
 }
 
+#' @rdname unf
+#' @param rast_Data (terra::SpatRaster) global raster data and the resolution must be 5'
+#' @importFrom terra values rast crop
+#' @export
+raster_2_unf <- function(rast_Data, idx_Continent) {
+  rast_GCRC <- rast(lst_rast_Mask_WaterGAP3[[idx_Continent]])
+  rast_Crop <- crop(rast_Data, rast_GCRC, mask = TRUE)
+  num_Data <- values(rast_Crop)
+  num_GCRC <- values(rast_GCRC)
+  idx_GCRC <- !is.na(num_GCRC)
+  (num_Data[idx_GCRC])[order(num_GCRC[idx_GCRC])]
+}
 
+#' @rdname unf
+#' @param fct_Extract A function to apply to the extracted values. Default is `mean`.
+#'
+#' @importFrom terra crs project extract
+#' @export
+extract_unf <- function(rast_Data, idx_Continent, fct_Extract = mean, fill_NA = 0) {
+  vect_Mask <- get_vect_mama(idx_Continent) |> vect()
+
+  crs_Rast <- crs(rast_Data)
+  crs_Mask <- crs(vect_Mask)
+  if(crs_Rast != crs_Mask) {
+    vect_Mask <- project(vect_Mask, crs_Rast)
+  }
+
+  num_Extract <- extract(rast_Data, vect_Mask, fct_Extract)
+  num_Extract[is.na(num_Extract)] <- fill_NA
+
+  num_Extract
+}
