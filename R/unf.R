@@ -71,16 +71,6 @@ analyse_file_unf <- function(fn_UNF) {
 }
 
 
-check_n_cell <- function(idx_Continent, n_Cell) {
-  # n_Cell_Conti <- c(180721, 371410, 841703, 109084, 461694, 226852, 70412)
-  # names(n_Cell_Conti) <- c("eu", "af", "as", "au", "na", "sa", "global_wg2")
-  if (n_Cell_Conti[idx_Continent] != n_Cell) {
-    stop(paste0("The continent ", idx_Continent, " must have ",
-                n_Cell_Conti[idx_Continent], " cells, but the data have ",
-                n_Cell, " cells."))
-  }
-
-}
 
 
 
@@ -89,15 +79,12 @@ check_n_cell <- function(idx_Continent, n_Cell) {
 #' @param idx_Continent string in ("eu", "af", "as", "au", "na", "sa", "global_wg2")
 #' @importFrom terra values
 #' @export
-unf_2_raster <- function(idx_Continent, num_Data) {
+unf_2_raster <- function(num_Data, idx_Continent) {
 
   check_n_cell(idx_Continent, length(num_Data))
 
   rast_Mask <- lst_rast_Mask_WaterGAP3[[idx_Continent]] |> rast()
-  vct_GCRC <- values(rast_Mask)
-  idx_NotNA <- which(!is.na(vct_GCRC))
-  idx_GCRC <- vct_GCRC[idx_NotNA]
-  values(rast_Mask)[idx_NotNA] <- num_Data[idx_GCRC]
+  values(rast_Mask)[lst_idx_NotNA[[idx_Continent]]] <- num_Data[lst_idx_GCRC[[idx_Continent]]]
 
   rast_Mask
 }
@@ -110,10 +97,71 @@ unf_2_raster <- function(idx_Continent, num_Data) {
 #' @importFrom purrr map2 reduce
 #' @export
 unf_2_raster_merge <- function(lst_num_Data) {
+  check_lst_name("lst_num_Data", names(lst_num_Data))
   str_Continent <- names(lst_num_Data)
-  map2(str_Continent, lst_num_Data, unf_2_raster) |>
+  map2(lst_num_Data, str_Continent, unf_2_raster) |>
     reduce(merge)
 }
+
+
+
+#' @rdname unf
+#' @param lst_mat_Data list of matrix(time, GCRC), data, that read from UNF-file and order by time the GCRC-Number,
+#' the list must named as ("eu", "af", "as", "au", "na", "sa") two or more
+#' @param fn_NC str, filename
+#' @param num_TimeDim numric, vector of time dimension
+#' @param name_Data,unit_Data,longname_Data str, data name, longname and unit for nc-file
+#' @importFrom ncdf4 ncdim_def ncvar_def nc_create ncvar_put ncatt_put nc_close
+#' @export
+unf_2_nc <- function(lst_mat_Data, fn_NC, num_TimeDim, name_Data, unit_Data, longname_Data) {
+
+  check_lst_name("lst_mat_Data", names(lst_mat_Data))
+
+  lon <- seq(-180 + 5/60/2, 180, by = 5/60)  # Longitude: 4320 points
+  lat <- seq(90 - 5/60/2, -90, by = -5/60)  # Latitude: 2160 points
+
+  n_Time <- 2
+  n_Lon <- length(lon)
+  n_Lat <- length(lat)
+
+
+  mat_Global <- matrix(NA, n_Time, n_Lon*n_Lat)
+  str_Continent <- names(lst_mat_Data)
+
+  for (i in str_Continent) {
+    mat_Global[, lst_idx_NotNA_Global[[i]]] <- lst_mat_Data[[i]][, lst_idx_GCRC_Global[[i]]]
+  }
+
+  dim(mat_Global) <- c(n_Time, n_Lat, n_Lon)
+
+
+
+  # Define dimensions for netCDF
+  dim_time <- ncdim_def(name = "time", units = "time", vals = num_TimeDim)
+  dim_lon <- ncdim_def(name = "lon", units = "degrees_east", vals = lon)
+  dim_lat <- ncdim_def(name = "lat", units = "degrees_north", vals = lat)
+
+  # Define variable
+  var_Data <- ncvar_def(name = name_Data, units = unit_Data, dim = list(dim_time, dim_lon, dim_lat),
+                        missval = -9999, longname = longname_Data)
+
+  # Create netCDF file
+  nc_ <- nc_create(fn_NC, vars = var_Data)
+
+  # Write data
+  ncvar_put(nc_, var_Data, mat_Global)
+
+  # Add global attributes
+  ncatt_put(nc_, 0, "institution", "Ruhr University Bochum")
+  ncatt_put(nc_, 0, "history", paste("Created", Sys.Date()))
+
+  # Close the file
+  nc_close(nc_)
+}
+
+
+
+
 
 #' @rdname unf
 #' @param rast_Data (terra::SpatRaster) global raster data and the resolution must be 5'
@@ -130,7 +178,7 @@ raster_2_unf <- function(rast_Data, idx_Continent) {
 
 #' @rdname unf
 #' @param fct_Extract A function to apply to the extracted values. Default is `mean`.
-#'
+#' @param fill_NA num, NA to replace
 #' @importFrom terra crs project extract
 #' @export
 extract_unf <- function(rast_Data, idx_Continent, fct_Extract = mean, fill_NA = 0) {
@@ -147,3 +195,9 @@ extract_unf <- function(rast_Data, idx_Continent, fct_Extract = mean, fill_NA = 
 
   num_Extract
 }
+
+
+
+
+
+

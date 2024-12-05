@@ -7,6 +7,7 @@
 \alias{write_UNF}
 \alias{unf_2_raster}
 \alias{unf_2_raster_merge}
+\alias{unf_2_nc}
 \alias{raster_2_unf}
 \alias{extract_unf}
 \title{Data im- & export in UNF file}
@@ -17,9 +18,11 @@ read_UNF_scp(fn_UNF, ip_Host, str_Username, str_Password)
 
 write_UNF(data_Export, fn_UNF)
 
-unf_2_raster(idx_Continent, num_Data)
+unf_2_raster(num_Data, idx_Continent)
 
 unf_2_raster_merge(lst_num_Data)
+
+unf_2_nc(lst_mat_Data, fn_NC, num_TimeDim, name_Data, unit_Data, longname_Data)
 
 raster_2_unf(rast_Data, idx_Continent)
 
@@ -36,16 +39,27 @@ extract_unf(rast_Data, idx_Continent, fct_Extract = mean, fill_NA = 0)
 
 \item{data_Export}{vector, data, that would exported}
 
-\item{idx_Continent}{string in ("eu", "af", "as", "au", "na", "sa", "global_wg2")}
-
 \item{num_Data}{vector (1D), data, that read from UNF-file and order by the GCRC-Number}
+
+\item{idx_Continent}{string in ("eu", "af", "as", "au", "na", "sa", "global_wg2")}
 
 \item{lst_num_Data}{list of vector, data, that read from UNF-file and order by the GCRC-Number,
 the list must named as ("eu", "af", "as", "au", "na", "sa") two or more}
 
+\item{lst_mat_Data}{list of matrix(time, GCRC), data, that read from UNF-file and order by time the GCRC-Number,
+the list must named as ("eu", "af", "as", "au", "na", "sa") two or more}
+
+\item{fn_NC}{str, filename}
+
+\item{num_TimeDim}{numric, vector of time dimension}
+
+\item{name_Data, unit_Data, longname_Data}{str, data name, longname and unit for nc-file}
+
 \item{rast_Data}{(terra::SpatRaster) global raster data and the resolution must be 5'}
 
 \item{fct_Extract}{A function to apply to the extracted values. Default is \code{mean}.}
+
+\item{fill_NA}{num, NA to replace}
 }
 \value{
 vector of numric or integer by read, UNF file by write

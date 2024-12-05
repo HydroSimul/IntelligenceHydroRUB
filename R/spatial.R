@@ -6,8 +6,7 @@
 #' @param rast_Data A raster object containing the data to be aggregated.
 #' @param int_Fact An integer specifying the aggregation factor. Default is 10.
 #' @param fct_Aggre A function to be used for aggregation. Default is `mean`.
-#' @param fill_NA A value to fill in for NA values in the aggregated raster.
-#'        Default is 0.
+#' @param fill_NA A value to fill in for NA values in the aggregated raster. Default is 0.
 #'
 #' @return A raster object of the aggregated data with NA values replaced.
 #'

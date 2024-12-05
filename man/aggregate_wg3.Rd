@@ -13,8 +13,7 @@ aggregate_wg3(rast_Data, int_Fact = 10, fct_Aggre = mean, fill_NA = 0)
 
 \item{fct_Aggre}{A function to be used for aggregation. Default is \code{mean}.}
 
-\item{fill_NA}{A value to fill in for NA values in the aggregated raster.
-Default is 0.}
+\item{fill_NA}{A value to fill in for NA values in the aggregated raster. Default is 0.}
 }
 \value{
 A raster object of the aggregated data with NA values replaced.

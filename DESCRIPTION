@@ -8,6 +8,7 @@ Description: This package will collect all the functions used in the course in R
 License: GPL (>= 2)
 Imports: mathjaxr, Rdpack, 
   stringr, dplyr, purrr,
+  ncdf4,
   terra, raster,
   RCurl, terra,
   rlang, glue,
