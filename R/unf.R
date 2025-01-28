@@ -47,7 +47,7 @@ read_UNF_scp <- function(fn_UNF, ip_Host, str_Username, str_Password) {
 #' @export
 write_UNF <- function(data_Export, fn_UNF) {
   mark_UNF <- as.integer(str_sub(fn_UNF, -1))
-  fct_AsType <- c(as.numeric, as.integer, as.integer, "", as.integer, "", "", "", "", as.numeric)[[mark_UNF + 1]]
+  fct_AsType <- c(as.numeric, as.integer, as.integer, "", as.integer, "", "", "", as.numeric)[[mark_UNF + 1]]
   n_Byte <- ifelse(mark_UNF, mark_UNF, 4L)
   writeBin(fct_AsType(data_Export), fn_UNF, n_Byte, endian = "big")
 }
@@ -56,7 +56,7 @@ write_UNF <- function(data_Export, fn_UNF) {
 
 analyse_file_unf <- function(fn_UNF) {
   mark_UNF <- as.integer(str_sub(fn_UNF, -1))
-  type_UNF <- c("numeric", "int", "int", "", "integer", "", "", "", "", "double")[mark_UNF + 1]
+  type_UNF <- c("numeric", "int", "int", "", "integer", "", "", "", "double")[mark_UNF + 1]
   n_Byte <- ifelse(mark_UNF, mark_UNF, 4L)
   n_Dim1 <- 1
   str_MatrxDot <- str_sub(fn_UNF, -8, -8)
@@ -108,55 +108,37 @@ unf_2_raster_merge <- function(lst_num_Data) {
 #' @rdname unf
 #' @param lst_mat_Data list of matrix(time, GCRC), data, that read from UNF-file and order by time the GCRC-Number,
 #' the list must named as ("eu", "af", "as", "au", "na", "sa") two or more
-#' @param fn_NC str, filename
-#' @param num_TimeDim numric, vector of time dimension
-#' @param name_Data,unit_Data,longname_Data str, data name, longname and unit for nc-file
-#' @importFrom ncdf4 ncdim_def ncvar_def nc_create ncvar_put ncatt_put nc_close
+#' @param n_Time int, time length
+#' @importFrom purrr map
 #' @export
-unf_2_nc <- function(lst_mat_Data, fn_NC, num_TimeDim, name_Data, unit_Data, longname_Data) {
+unf_2_ary_WG3 <- function(lst_fn_Data, n_Time) {
 
-  check_lst_name("lst_mat_Data", names(lst_mat_Data))
+  check_lst_name("lst_fn_Data", names(lst_fn_Data))
+
+  lst_mat_Data <- map(lst_fn_Data,
+                      \(x) map(x, read_UNF) |> unlist())
+
+  for (i in str_Continent) {
+    dim(lst_mat_Data[[i]]) <- c(IntelligenceHydroRUB::n_Cell_Conti[i], n_Time)
+  }
 
   lon <- seq(-180 + 5/60/2, 180, by = 5/60)  # Longitude: 4320 points
   lat <- seq(90 - 5/60/2, -90, by = -5/60)  # Latitude: 2160 points
 
-  n_Time <- 2
   n_Lon <- length(lon)
   n_Lat <- length(lat)
 
 
-  mat_Global <- matrix(NA, n_Time, n_Lon*n_Lat)
+  ary_Global <- matrix(NA, n_Time, n_Lon*n_Lat)
   str_Continent <- names(lst_mat_Data)
 
   for (i in str_Continent) {
-    mat_Global[, lst_idx_NotNA_Global[[i]]] <- lst_mat_Data[[i]][, lst_idx_GCRC_Global[[i]]]
+    ary_Global[, lst_idx_NotNA_Global[[i]]] <- lst_mat_Data[[i]][lst_idx_GCRC_Global[[i]], ] |> t()
   }
 
-  dim(mat_Global) <- c(n_Time, n_Lat, n_Lon)
+  dim(ary_Global) <- c(n_Time, n_Lon, n_Lat)
 
-
-
-  # Define dimensions for netCDF
-  dim_time <- ncdim_def(name = "time", units = "time", vals = num_TimeDim)
-  dim_lon <- ncdim_def(name = "lon", units = "degrees_east", vals = lon)
-  dim_lat <- ncdim_def(name = "lat", units = "degrees_north", vals = lat)
-
-  # Define variable
-  var_Data <- ncvar_def(name = name_Data, units = unit_Data, dim = list(dim_time, dim_lon, dim_lat),
-                        missval = -9999, longname = longname_Data)
-
-  # Create netCDF file
-  nc_ <- nc_create(fn_NC, vars = var_Data)
-
-  # Write data
-  ncvar_put(nc_, var_Data, mat_Global)
-
-  # Add global attributes
-  ncatt_put(nc_, 0, "institution", "Ruhr University Bochum")
-  ncatt_put(nc_, 0, "history", paste("Created", Sys.Date()))
-
-  # Close the file
-  nc_close(nc_)
+  ary_Global
 }
 
 
