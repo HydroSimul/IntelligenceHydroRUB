@@ -12,6 +12,7 @@ write_nc_global(
   name_Data,
   unit_Data,
   longname_Data,
+  dim_Order = "TimeLonLat",
   num_Resolut = 5
 )
 }
@@ -25,6 +26,8 @@ write_nc_global(
 \item{unit_TimeDim}{str, unit of time dimension, like "year", "day from 1990-01-01"}
 
 \item{name_Data, unit_Data, longname_Data}{str, data name, longname and unit for nc-file}
+
+\item{dim_Order}{str 'TimeLonLat' or 'LonLatTime'}
 
 \item{num_Resolut}{int, resolution in arc minute}
 }

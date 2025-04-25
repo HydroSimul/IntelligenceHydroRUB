@@ -63,7 +63,7 @@ analyse_file_unf <- function(fn_UNF) {
   str_MatrxDot2 <- str_sub(fn_UNF, -7, -7)
   str_MatrixN <- str_sub(fn_UNF, -7, -6)
   str_MatrixN2 <- str_sub(fn_UNF, -6, -6)
-  if_Matrix <- str_MatrxDot == "." & str_MatrixN %in% c("12", "31", "26")
+  if_Matrix <- str_MatrxDot == "." & str_MatrixN %in% c("12", "31", "26", "20")
   if_Matrix2 <- str_MatrxDot2 == "." & str_MatrixN2 %in% c("8", "9")
   if(if_Matrix) n_Dim1 <- as.integer(str_MatrixN)
   if(if_Matrix2) n_Dim1 <- as.integer(str_MatrixN2)
